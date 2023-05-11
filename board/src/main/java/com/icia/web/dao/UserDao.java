@@ -8,5 +8,7 @@ import com.icia.web.model.User;
 public interface UserDao {
 	
 	public User userSelect(String userId);
+	
+	public int userInsert(User user);
 
 }

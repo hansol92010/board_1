@@ -27,7 +27,18 @@ public class UserService {
 		}
 		
 		return user;
+	}
+	
+	public int userInsert(User user) {
+		int count = 0;
 		
+		try {
+			count = userDao.userInsert(user);
+		} catch(Exception e) {
+			logger.debug("UserService userInsert Exception", e);
+		}
+		
+		return count;
 	}
 
 }

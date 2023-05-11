@@ -22,5 +22,25 @@
 	 WHERE USER_ID = #{value}
 </select>
 
+<insert id="userInsert" parameterType="com.icia.web.model.User">
+INSERT INTO TBL_USER
+(
+    USER_ID,
+    USER_PWD,
+    USER_NAME,
+    USER_EMAIL,
+    STATUS,
+    REG_DATE
+)
+VALUES
+(
+    #{userId},
+    #{userPwd},
+    #{userName},
+    #{userEmail},
+    #{status},
+    SYSDATE
+)
+</insert>
 
 </mapper>
