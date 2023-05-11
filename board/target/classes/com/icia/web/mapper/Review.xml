@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.icia.web.dao.ReviewDao">
+<resultMap id="reviewResultMap" type="com.icia.web.model.Review">
+	<id column="RNO" property="rno" />
+	<result column="BNO" property="bno" />
+	<result column="WRITER" property="writer" />
+	<result column="CONTENT" property="content" />
+	<result column="REGDATE" property="regdate" />
+</resultMap>
+
+<!-- 게시물 등록 -->
+<insert id="reviewInsert" parameterType="com.icia.web.model.Review">
+INSERT INTO TBL_DATGUL (
+    RNO,
+    BNO,
+    WRITER,
+    CONTENT,
+    REGDATE
+) VALUES (
+    #{rno},
+    #{bno},
+    #{writer},
+    #{content},
+    SYSDATE
+)
+</insert>
+
+
+</mapper>

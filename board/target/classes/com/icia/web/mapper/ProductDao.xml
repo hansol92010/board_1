@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.icia.web.dao.ProductDao">
+
+<resultMap id="productResultMap" type="com.icia.web.model.Product">
+	<id column="PRODUCT_NO" property="productNo" />
+	<result column="MAIN_CATEGORY_CODE" property="mainCategoryCode" />
+	<result column="SUB_CATEGORY_CODE" property="subCategoryCode" />
+	<result column="PRODUCT_NAME" property="productName" />
+	<result column="PRODUCT_PRICE" property="productPrice" />
+	<result column="PRODUCT_REG_DATE" property="productRegDate" />
+	<result column="SALES_RATE" property="salesRate" />
+	<result column="BRAND_CODE" property="brandCode" />
+</resultMap>
+
+
+<!-- 모든 상품 수/shop 메인 페이지 -->
+<select id="allProductCount" parameterType="com.icia.web.model.Product" resultType="long">
+	SELECT COUNT(PRODUCT_NO) AS CNT
+	  FROM TBL_PRODUCT
+</select>
+
+
+<!-- 모든 상품(shop 메인페이지) / 판매량순(일단은 product_no순으로 해놓음) -->
+<select id="allProductList" parameterType="com.icia.web.model.Product" resultMap="productResultMap">
+SELECT PRODUCT_NO,
+	   MAIN_CATEGORY_CODE,
+	   SUB_CATEGORY_CODE,
+	   PRODUCT_NAME,
+	   PRODUCT_PRICE,
+	   PRODUCT_REG_DATE,
+	   SALES_RATE,
+	   BRAND_CODE 
+ FROM  (SELECT ROWNUM AS RNUM,
+       PRODUCT_NO,
+	   MAIN_CATEGORY_CODE,
+	   SUB_CATEGORY_CODE,
+	   PRODUCT_NAME,
+	   PRODUCT_PRICE,
+	   PRODUCT_REG_DATE,
+	   SALES_RATE,
+	   BRAND_CODE 
+       FROM (SELECT PRODUCT_NO,
+               NVL(MAIN_CATEGORY_CODE, '') AS MAIN_CATEGORY_CODE,
+               NVL(SUB_CATEGORY_CODE, '') AS SUB_CATEGORY_CODE,
+               NVL(PRODUCT_NAME, '') AS PRODUCT_NAME,
+               NVL(PRODUCT_PRICE, 0) AS PRODUCT_PRICE,
+               NVL(TO_CHAR(PRODUCT_REG_DATE, 'YYYY.MM.DD HH24:MI:SS'), '') AS PRODUCT_REG_DATE,
+               NVL(SALES_RATE, 0) AS SALES_RATE,
+               NVL(BRAND_CODE, '') AS BRAND_CODE 
+	           FROM TBL_PRODUCT
+	<choose>
+		<when test='optionSelect == "1"'>
+               ORDER BY PRODUCT_REG_DATE DESC))
+        </when>
+   		<when test='optionSelect == "2"'>
+               ORDER BY SALES_RATE DESC))
+        </when>
+   		<when test='optionSelect == "3"'>
+               ORDER BY PRODUCT_PRICE DESC))
+        </when>
+		<when test='optionSelect == "4"'>
+               ORDER BY PRODUCT_PRICE ASC))
+        </when>
+        <otherwise>
+        	   ORDER BY SALES_RATE DESC))
+        </otherwise>
+    </choose>
+     WHERE RNUM <![CDATA[>=]]> #{startRow}
+       AND RNUM <![CDATA[<=]]> #{endRow}
+</select>
+
+
+<!-- 각 브랜드 별 상품 수 -->
+<select id="eachBrandCount" parameterType="String" resultType="long">
+SELECT COUNT(PRODUCT_NO) AS CNT
+ FROM TBL_PRODUCT
+WHERE BRAND_CODE = #{value}
+</select>
+
+
+<!-- 각 브랜드 별 상품 조회 / 최신순-->
+<select id="eachBrandSelect" parameterType="com.icia.web.model.Product" resultMap="productResultMap">
+SELECT PRODUCT_NO,
+	   MAIN_CATEGORY_CODE,
+	   SUB_CATEGORY_CODE,
+	   PRODUCT_NAME,
+	   PRODUCT_PRICE,
+	   PRODUCT_REG_DATE,
+	   SALES_RATE,
+	   BRAND_CODE 
+ FROM  (SELECT ROWNUM AS RNUM,
+       PRODUCT_NO,
+	   MAIN_CATEGORY_CODE,
+	   SUB_CATEGORY_CODE,
+	   PRODUCT_NAME,
+	   PRODUCT_PRICE,
+	   PRODUCT_REG_DATE,
+	   SALES_RATE,
+	   BRAND_CODE 
+       FROM (SELECT PRODUCT_NO,
+               NVL(MAIN_CATEGORY_CODE, '') AS MAIN_CATEGORY_CODE,
+               NVL(SUB_CATEGORY_CODE, '') AS SUB_CATEGORY_CODE,
+               NVL(PRODUCT_NAME, '') AS PRODUCT_NAME,
+               NVL(PRODUCT_PRICE, 0) AS PRODUCT_PRICE,
+               NVL(TO_CHAR(PRODUCT_REG_DATE, 'YYYY.MM.DD HH24:MI:SS'), '') AS PRODUCT_REG_DATE,
+               NVL(SALES_RATE, 0) AS SALES_RATE,
+               NVL(BRAND_CODE, '') AS BRAND_CODE
+	           FROM TBL_PRODUCT
+	           WHERE BRAND_CODE = #{brandCode}
+               ORDER BY PRODUCT_REG_DATE DESC))
+     WHERE RNUM <![CDATA[>=]]> #{startRow}
+       AND RNUM <![CDATA[<=]]> #{endRow}
+</select>
+
+
+<!-- 메인, 하위 카테고리 별 상품 수 -->
+<select id="categoryCount" parameterType="com.icia.web.model.Product" resultType="long">
+SELECT COUNT(PRODUCT_NO) AS CNT
+ FROM TBL_PRODUCT
+WHERE MAIN_CATEGORY_CODE = #{mainCategoryCode}
+  AND SUB_CATEGORY_CODE = #{subCategoryCode}
+</select>
+
+
+<!-- 서브 카테고리 상품 조회 / 최신순 -->
+<select id="categorySelect" parameterType="com.icia.web.model.Product" resultMap="productResultMap">
+SELECT PRODUCT_NO,
+	   MAIN_CATEGORY_CODE,
+	   SUB_CATEGORY_CODE,
+	   PRODUCT_NAME,
+	   PRODUCT_PRICE,
+	   PRODUCT_REG_DATE,
+	   SALES_RATE,
+	   BRAND_CODE 
+ FROM  (SELECT ROWNUM AS RNUM,
+       PRODUCT_NO,
+	   MAIN_CATEGORY_CODE,
+	   SUB_CATEGORY_CODE,
+	   PRODUCT_NAME,
+	   PRODUCT_PRICE,
+	   PRODUCT_REG_DATE,
+	   SALES_RATE,
+	   BRAND_CODE 
+       FROM (SELECT PRODUCT_NO,
+               NVL(MAIN_CATEGORY_CODE, '') AS MAIN_CATEGORY_CODE,
+               NVL(SUB_CATEGORY_CODE, '') AS SUB_CATEGORY_CODE,
+               NVL(PRODUCT_NAME, '') AS PRODUCT_NAME,
+               NVL(PRODUCT_PRICE, 0) AS PRODUCT_PRICE,
+               NVL(TO_CHAR(PRODUCT_REG_DATE, 'YYYY.MM.DD HH24:MI:SS'), '') AS PRODUCT_REG_DATE,
+               NVL(SALES_RATE, 0) AS SALES_RATE,
+               NVL(BRAND_CODE, '') AS BRAND_CODE 
+	           FROM TBL_PRODUCT
+			  WHERE MAIN_CATEGORY_CODE = #{mainCategoryCode}
+		        AND SUB_CATEGORY_CODE = #{subCategoryCode}
+		      ORDER BY PRODUCT_REG_DATE DESC))
+     WHERE RNUM <![CDATA[>=]]> #{startRow}
+       AND RNUM <![CDATA[<=]]> #{endRow}
+</select>
+
+<!-- 상세 페이지에서의 상품 -->
+<select id="detailProduct" parameterType="int" resultMap="productResultMap">
+SELECT PRODUCT_NO,
+       MAIN_CATEGORY_CODE,
+       SUB_CATEGORY_CODE,
+       PRODUCT_NAME,
+       PRODUCT_PRICE,
+       BRAND_CODE
+FROM TBL_PRODUCT
+WHERE PRODUCT_NO = #{value}
+</select>
+
+<!-- 브랜드를 이용한 무작위 추출 -->
+<select id="brandRandom" parameterType="string" resultMap="productResultMap">
+SELECT PRODUCT_NO,
+       MAIN_CATEGORY_CODE,
+       SUB_CATEGORY_CODE,
+       PRODUCT_NAME,
+       PRODUCT_PRICE,
+       PRODUCT_REG_DATE,
+       SALES_RATE,
+       BRAND_CODE
+  FROM TBL_PRODUCT
+ WHERE BRAND_CODE = #{value}
+ORDER BY DBMS_RANDOM.VALUE
+</select>
+
+<!-- 구매할 물품 선택 -->
+<select id="selectProduct" parameterType="int" resultMap="productResultMap">
+SELECT PRODUCT_NO,
+       NVL(MAIN_CATEGORY_CODE, '') AS MAIN_CATEGORY_CODE,
+       NVL(SUB_CATEGORY_CODE, '') AS SUB_CATEGORY_CODE,
+       NVL(PRODUCT_NAME, '') AS PRODUCT_NAME,
+       NVL(PRODUCT_PRICE, 0) AS PRODUCT_PRICE,
+       NVL(TO_CHAR(PRODUCT_REG_DATE, 'YYYY.MM.DD HH24:MI:SS'), '') AS PRODUCT_REG_DATE,
+       NVL(SALES_RATE, 0) AS SALES_RATE,
+       NVL(BRAND_CODE, '') AS BRAND_CODE
+FROM TBL_PRODUCT
+where PRODUCT_NO = #{value}
+</select>
+
+<!-- 관리자 페이지 업데이트 -->
+<update id="productUpdate" parameterType="com.icia.web.model.Product" >
+UPDATE TBL_PRODUCT
+SET MAIN_CATEGORY_CODE = #{mainCategory},
+    SUB_CATEGORY_CODE = #{subCategory},
+    PRODUCT_NAME = #{productName},
+    PRODUCT_PRICE = #{productPrice},
+    BRAND_CODE = #{brandCode}
+WHERE PRODUCT_NO = #{productNo}
+</update>
+
+<update id="productStockUpdate" parameterType="com.icia.web.model.ProductSize">
+UPDATE TBL_PRODUCT_SIZE
+SET SIZE_NAME = #{sizeName},
+    UNITS = #{units}
+WHERE PRODUCT_NO = #{productNa}
+</update>
+
+
+
+</mapper>
