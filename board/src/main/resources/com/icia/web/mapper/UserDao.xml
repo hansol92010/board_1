@@ -43,4 +43,12 @@ VALUES
 )
 </insert>
 
+<update id="userUpdate" parameterType="com.icia.web.model.User">
+UPDATE TBL_USER
+   SET USER_PWD = #{userPwd},
+       USER_NAME = #{userName},
+       USER_EMAIL = #{userEmail}
+ WHERE USER_ID = #{userId}
+</update>
+
 </mapper>

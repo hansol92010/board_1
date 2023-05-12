@@ -40,5 +40,18 @@ public class UserService {
 		
 		return count;
 	}
+	
+	public int userUpdate(User user) {
+		int count = 0;
+		
+		try {
+			count = userDao.userUpdate(user);
+		}
+		catch(Exception e) {
+			logger.debug("UserService userUpdate Exception", e);
+		}
+		
+		return count;
+	}
 
 }

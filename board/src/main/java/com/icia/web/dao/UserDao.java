@@ -10,5 +10,7 @@ public interface UserDao {
 	public User userSelect(String userId);
 	
 	public int userInsert(User user);
+	
+	public int userUpdate(User user);
 
 }
