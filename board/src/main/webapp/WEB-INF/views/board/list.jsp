@@ -5,6 +5,9 @@
 <head>
 <%@ include file="/WEB-INF/views/include/head.jsp" %>
 </head>
+<script>
+
+</script>
 <body>
 <%@ include file="/WEB-INF/views/include/navigation.jsp" %>
 
@@ -26,6 +29,8 @@
 		</div>	
 	</div>
 	
+
+	
 	<table class="table table-hover">
 		<thead>
 			<tr style="background-color:#dee2e6;">
@@ -36,9 +41,15 @@
 				<th scope="col" class="text-center" style="width:10%;">조회수</th>
 			</tr>
 		</thead>
-		
+			
 		<tbody>
-		
+			<tr>
+				<td class="text-center"></td>
+				<td class="text-center"></td>
+				<td class="text-center"></td>
+				<td class="text-center"></td>
+				<td class="text-center"></td>
+			</tr>
 		</tbody>
 		
 		<tfoot>
@@ -49,17 +60,22 @@
 	
 	</table>
 	
+	<nav>
+		<ul class="pagination justify-content-center">
+			<li class="page-item"></li>
+			<li class="page-item"></li>
+		</ul>
 	
-	
-
-
-
+	</nav>
 
 </div>
 
-
-
-
+	<form name="bbsForm" ud="bbsForm" method="post">
+		<input type="hidden" name="hibbsSeq" value="" />
+		<input type="hidden" name="searchType" value="" />
+		<input type="hidden" name="searchValue" value="" />
+		<input type="hidden" name="curPage" value="" />
+	</form>
 
 </body>
 </html>

@@ -237,6 +237,19 @@ public class UserController {
 	}
 	
 	
+	//로그아웃
+	@RequestMapping(value="/user/loginOut", method=RequestMethod.GET)
+	public String loginOut(HttpServletRequest request, HttpServletResponse response) {
+		
+		if(CookieUtil.getCookie(request, AUTH_COOKIE_NAME) != null) {
+		
+			CookieUtil.deleteCookie(request, response, "/", AUTH_COOKIE_NAME);
+		}
+		
+		return "redirect:/";
+	}
+	
+	
 	
 	
 }
