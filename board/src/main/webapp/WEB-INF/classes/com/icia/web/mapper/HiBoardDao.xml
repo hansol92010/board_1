@@ -5,6 +5,8 @@
 <resultMap type="com.icia.web.model.HiBoard" id="hiBoardResultMap" >
 	<id column="HIBBS_SEQ" property="hibbsSeq" />
 	<result column="USER_ID" property="userId" />
+	<result column="USER_NAME" property="userName" />
+		<result column="USER_EMAIL" property="userEmail" />
 	<result column="HIBBS_GROUP" property="hibbsGroup" />
 	<result column="HIBBS_ORDER" property="hibbsOrder" />
 	<result column="HIBBS_INDENT" property="hibbsIndent" />
@@ -15,9 +17,32 @@
 	<result column="HIBBS_PARENT" property="hibbsParent" />
 </resultMap>
 
+<select id="boardListCount" parameterType="com.icia.web.model.HiBoard" resultType="int">
+SELECT COUNT(A.HIBBS_SEQ) AS CNT
+  FROM TBL_HIBOARD A, TBL_HIBOARD B
+ WHERE A.USER_ID = B.USER_ID
+ 
+<if test='searchType != null and searchType != "" and searchValue != null and searchValue != "" '>
+	<choose>
+		<when test='searchType == "1"' >
+			AND B.USERNAME LIKE '%' || #{searchValue} || '%'
+		</when>
+		<when test='searchType == "2"'>
+			AND A.HIBBS_TITLE LIKE '%' || #{searchValue} || '%'
+		</when>
+		<when test='searchType == "3"'>
+			AND DBMS_LOB.INSTR(A.HIBBS_CONTENT, #{searchValue}) > 0
+		</when>
+	
+	</choose>
+</if> 
+</select>
+
 <select id="boardList" parameterType="com.icia.web.model.HiBoard" resultMap="hiBoardResultMap">
 SELECT HIBBS_SEQ,
        USER_ID,
+       USER_NAME,
+       USER_EMAIL,
        HIBBS_GROUP,
        HIBBS_ORDER,
        HIBBS_INDENT,
@@ -29,6 +54,8 @@ SELECT HIBBS_SEQ,
   FROM (SELECT ROWNUM AS RNUM,
                HIBBS_SEQ,
                USER_ID,
+               USER_NAME,
+               USER_EMAIL,
                HIBBS_GROUP,
                HIBBS_ORDER,
                HIBBS_INDENT,
@@ -37,22 +64,24 @@ SELECT HIBBS_SEQ,
                HIBBS_READ_CNT,
                REG_DATE,
                HIBBS_PARENT
-          FROM (SELECT HIBBS_SEQ,
-                       USER_ID,
-                       NVL(HIBBS_GROUP, '') AS HIBBS_GROUP,
-                       NVL(HIBBS_ORDER, '') AS HIBBS_ORDER,
-                       NVL(HIBBS_INDENT, '') AS HIBBS_INDENT,
-                       NVL(HIBBS_TITLE, '') AS HIBBS_TITLE,
-                       NVL(HIBBS_CONTENT, '') AS HIBBS_CONTENT,
-                       NVL(HIBBS_READ_CNT, '') AS HIBBS_READ_CNT,
-                       NVL(TO_CHAR(REG_DATE, 'YYYY.MM.DD HH24:MI:SS'), '') AS REG_DATE,
-                       NVL(HIBBS_PARENT, '') AS HIBBS_PARENT
+          FROM (SELECT A.HIBBS_SEQ,
+                       B.USER_ID,
+                       NVL(B.USER_NAME, '') AS USER_NAME,
+                       NVL(B.USER_MAIL, '') AS USER_EMAIL,
+                       NVL(A.HIBBS_GROUP, '') AS HIBBS_GROUP,
+                       NVL(A.HIBBS_ORDER, '') AS HIBBS_ORDER,
+                       NVL(A.HIBBS_INDENT, '') AS HIBBS_INDENT,
+                       NVL(A.HIBBS_TITLE, '') AS HIBBS_TITLE,
+                       NVL(A.HIBBS_CONTENT, '') AS HIBBS_CONTENT,
+                       NVL(A.HIBBS_READ_CNT, '') AS HIBBS_READ_CNT,
+                       NVL(TO_CHAR(A.REG_DATE, 'YYYY.MM.DD HH24:MI:SS'), '') AS REG_DATE,
+                       NVL(A.HIBBS_PARENT, '') AS HIBBS_PARENT
                   FROM TBL_HIBOARD A, TBL_USER B
                  WHERE A.USER_ID = B.USER_ID
 <if test='searchType != null and searchType != "" and searchValue != null and searchValue != ""'>
 	<choose>
 		<when test='searchType == "1"'>
-                   AND A.USER_ID LIKE '%' || #{searchValue} || '%'
+                   AND B.USER_NAME LIKE '%' || #{searchValue} || '%'
 		</when>
 		<when test='searchType == "2"'>
                    AND A.HIBBS_TITLE LIKE '%' || #{searchValue} || '%'

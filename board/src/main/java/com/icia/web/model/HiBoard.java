@@ -26,6 +26,9 @@ public class HiBoard implements Serializable {
 	private long startRow;
 	private long endRow;
 	
+	private String userName;
+	private String userEmail;
+	
 	public long getHibbsSeq() {
 		return hibbsSeq;
 	}
@@ -109,6 +112,18 @@ public class HiBoard implements Serializable {
 	}
 	public void setEndRow(long endRow) {
 		this.endRow = endRow;
+	}
+	public String getUserName() {
+		return userName;
+	}
+	public void setUserName(String userName) {
+		this.userName = userName;
+	}
+	public String getUserEmail() {
+		return userEmail;
+	}
+	public void setUserEmail(String userEmail) {
+		this.userEmail = userEmail;
 	}
 	
 }

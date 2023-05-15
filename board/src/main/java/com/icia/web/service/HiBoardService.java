@@ -1,5 +1,7 @@
 package com.icia.web.service;
 
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,17 +18,30 @@ public class HiBoardService {
 	@Autowired
 	private HiBoardDao hiBoardDao;
 	
-	public HiBoard boardList(HiBoard hiBoard) {
+	public List<HiBoard> boardList(HiBoard hiBoard) {
 		
-		HiBoard result = null;
+		List<HiBoard> list = null;
 		
 		try {
-			result = hiBoardDao.boardList(hiBoard);
+			list = hiBoardDao.boardList(hiBoard);
 		} catch(Exception e) {
 			logger.debug("[HiBoardService] boardList Exception", e);
 		}
 		
-		return result;
+		return list;
+	}
+	
+	public int boardListCount(HiBoard hiBoard) {
+		int count = 0;
+		
+		try {
+			count = hiBoardDao.boardListCount(hiBoard);
+		}
+		catch(Exception e) {
+			logger.debug("[HiBoardService] boardListCount Exception", e);
+		}
+		
+		return count;
 	}
 
 }

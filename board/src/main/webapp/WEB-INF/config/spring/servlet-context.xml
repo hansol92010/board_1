@@ -69,11 +69,6 @@
             			<value>/kakao/paySuccess</value>
             			<value>/kakao/payFail</value>
             			<value>/kakao/payCancel</value>
-            			<value>/shop/goods</value>
-            			<value>/shop/detail</value>
-            			<value>/shop/cart</value>
-            			<value>/style/style</value>
-            			<value>/style/styleList</value>
             		</list>
             	</constructor-arg>
             </bean>
