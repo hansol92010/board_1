@@ -16,6 +16,17 @@ public class HiBoardFile implements Serializable {
 	private String fileExe;
 	private long fileSize;
 	private String regDate;
+	
+	public HiBoardFile() {
+		hibbsSeq = 0;
+		fileSeq = 0;
+		fileOrgName = "";
+		fileName = "";
+		fileExe = "";
+		fileSize = 0;
+		regDate = "";
+	}
+	
 	public long getHibbsSeq() {
 		return hibbsSeq;
 	}

@@ -13,10 +13,15 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 
+import com.icia.common.model.FileData;
 import com.icia.common.util.StringUtil;
 import com.icia.web.model.HiBoard;
+import com.icia.web.model.HiBoardFile;
 import com.icia.web.model.Paging;
+import com.icia.web.model.Response;
 import com.icia.web.model.User;
 import com.icia.web.service.HiBoardService;
 import com.icia.web.service.UserService;
@@ -30,6 +35,9 @@ public class HiBoardController {
 	
 	@Value("#{env['auth.cookie.name']}")
 	private String AUTH_COOKIE_NAME;
+	
+	@Value("#{env['upload.save.dir']}")
+	private String UPLOAD_SAVE_DIR;
 	
 	@Autowired
 	private UserService userservice;
@@ -45,10 +53,10 @@ public class HiBoardController {
 		
 		String searchType = HttpUtil.get(request, "searchType", "");
 		String searchValue = HttpUtil.get(request, "searchVale", "");
-		long curPage = HttpUtil.get(request, "curPage", (long)0);
+		long curPage = HttpUtil.get(request, "curPage", (long)1);
 		
 		Paging paging = null;
-		HiBoard search = null;
+		HiBoard search = new HiBoard();
 		
 		int totalCount = 0;
 		List<HiBoard> list = null;
@@ -66,15 +74,20 @@ public class HiBoardController {
 		
 		if(totalCount > 0) {
 			
-			paging = new Paging("/board/list", null, totalCount, LIST_COUNT, PAGE_COUNT, curPage, "curPage");
+			paging = new Paging("/board/list", totalCount, LIST_COUNT, PAGE_COUNT, curPage, "curPage");
 			
 			paging.addParam("searchType", searchType);
 			paging.addParam("searchValue", searchValue);
 			paging.addParam("curPage", curPage);
 			
+			logger.debug("=================");
+			logger.debug("paging.getStartRow() : " + paging.getStartRow());
+			logger.debug("paging.getStartPage() : " + paging.getStartPage());
+			logger.debug("=================");
+			
 			search.setStartRow(paging.getStartRow());
 			search.setEndRow(paging.getEndRow());
-			
+
 			list = hiBoardService.boardList(search);
 			
 		}
@@ -102,5 +115,53 @@ public class HiBoardController {
 		}
 		
 		return "/board/writeForm";
+	}
+	
+	@RequestMapping(value="/board/writeProc", method=RequestMethod.POST)
+	@ResponseBody
+	public Response<Object> writeProc(MultipartHttpServletRequest request, HttpServletResponse response) {
+		
+		Response<Object> res = new Response<Object>();
+		
+		String cookieUserId = CookieUtil.getHexValue(request, AUTH_COOKIE_NAME);
+		String hibbsTitle = HttpUtil.get(request, "hibbsTitle", "");
+		String hibbsContent = HttpUtil.get(request, "hibbsContent", "");
+		FileData fileData = HttpUtil.getFile(request, "hibbsFile", UPLOAD_SAVE_DIR);
+		
+		if(!StringUtil.isEmpty(hibbsTitle) && !StringUtil.isEmpty(hibbsContent)) {
+			
+			HiBoard hiBoard = new HiBoard();
+			
+			hiBoard.setUserId(cookieUserId);
+			hiBoard.setHibbsTitle(hibbsTitle);
+			hiBoard.setHibbsContent(hibbsContent);
+			
+			if(fileData != null && fileData.getFileSize() > 0) {
+			
+				HiBoardFile hiBoardFile = new HiBoardFile();
+				
+				hiBoardFile.setFileOrgName(fileData.getFileOrgName());
+				hiBoardFile.setFileName(fileData.getFileName());
+				hiBoardFile.setFileExe(fileData.getFileExt());
+				hiBoardFile.setFileSize(fileData.getFileSize());
+				
+				hiBoard.setHiBoardFile(hiBoardFile);
+				
+			}
+			
+			try {
+					if(hiBoardService.boardInsert(hiBoard) > 0) {
+						res.setResponse(0, "Success");
+					} else {
+						res.setResponse(500, "Internal Server Error");
+					}
+			} catch(Exception e) {
+				logger.debug("[HiBoardController] /board/writeProc Exception",e);
+			}		
+		} else {
+			res.setResponse(400, "Bad Request");
+		}
+		
+		return res;
 	}
 }

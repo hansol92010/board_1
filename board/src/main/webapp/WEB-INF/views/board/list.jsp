@@ -9,7 +9,7 @@
 $(document).ready(function() {
 
 	$("#btnSearch").on("click", function() {
-		document.bbsForm.hiBbsSeq.value = "";
+		document.bbsForm.hibbsSeq.value = "";
 		document.bbsForm.searchType.value = $("#_searchType").val();
 		document.bbsForm.searchValue.value = $("#_searchValue").val();
 		document.bbsForm.curPage.value = "";
@@ -18,7 +18,7 @@ $(document).ready(function() {
 	})
 	
 	$("#btnWrite").on("click", function() {
-		document.bbsForm.hiBbsSeq.value = "";
+		document.bbsForm.hibbsSeq.value = "";
 		document.bbsForm.action = "/board/writeForm";
 		document.bbsForm.submit();
 	})
@@ -26,14 +26,14 @@ $(document).ready(function() {
 })
 
 function fn_view(bbsSeq) {
-	document.bbsForm.hiBbsSeq.value = bbsSeq;
+	document.bbsForm.hibbsSeq.value = bbsSeq;
 	document.bbsForm.action = "/board/view";
 	document.bbsForm.submit();
 }
 
 //searchType, searchValue를 넣어야 할까? 고민해보기
 function fn_list(curPage) {
-	document.bbsForm.hiBbsSeq.value = "";
+	document.bbsForm.hibbsSeq.value = "";
 	document.bbsForm.curPage.value = curPage;
 	document.bbsFrom.action = "/board/list";
 	document.bbsForm.submit();
@@ -78,8 +78,8 @@ function fn_list(curPage) {
 	<c:forEach var="hiBoard" items="${list}" varStatus="status">	
 			<tr>
 		<c:choose>
-			<c:when test="${hiBoard.hiBbsIndent eq 0 }">
-				<td class="text-center">${hiBoard.hiBbsSeq}</td>
+			<c:when test="${hiBoard.hibbsIndent eq 0 }">
+				<td class="text-center">${hiBoard.hibbsSeq}</td>
 			</c:when>
 			<c:otherwise>
 				<td class="text-center"></td>
@@ -87,17 +87,17 @@ function fn_list(curPage) {
 		</c:choose>		
 				
 				<td class="text-center">
-					<a href="javascript:void(0)" onclick="fn_view(${hiBoard.hiBbsSeq})">
-					<c:if test="${hiBoard.hiBbsIndent > 0}">
-						<img src="/resources/images/icon_reply.gif" style="margin-left:${hiBoard.hiBbsIndent}em;" />
+					<a href="javascript:void(0)" onclick="fn_view(${hiBoard.hibbsSeq})">
+					<c:if test="${hiBoard.hibbsIndent > 0}">
+						<img src="/resources/images/icon_reply.gif" style="margin-left:${hiBoard.hibbsIndent}em;" />
 					</c:if>
-					${hiBoard.hiBbsTitle}
+					${hiBoard.hibbsTitle}
 					</a>
 				</td>
 				
 				<td class="text-center">${hiBoard.userName}</td>
 				<td class="text-center">${hiBoard.regDate}</td>
-				<td class="text-center"><fmt:formatNumber type="number" maxFractionDigits="3" value="${hiBoard.hiBbsReadCnt}" /></td>
+				<td class="text-center"><fmt:formatNumber type="number" maxFractionDigits="3" value="${hiBoard.hibbsReadCnt}" /></td>
 			</tr>
 	</c:forEach>
 </c:if>	
@@ -116,7 +116,7 @@ function fn_list(curPage) {
 		
 <c:if test="${!empty paging}">
 
-	<c:if test="${paging.preBlockPage gt 0}">
+	<c:if test="${paging.prevBlockPage gt 0}">
 			<li class="page-item"><a class="page-link" href="javascript:void(0)" onclick="fn_list(${paging.prevBlockPage})">이전블록</a></li>
 	</c:if>
 	
@@ -142,7 +142,7 @@ function fn_list(curPage) {
 	<button type="button" id="btnWrite" class="btn btn-secondary mb-3">글쓰기</button>
 
 	<form name="bbsForm" id="bbsForm" method="post">
-		<input type="hidden" name="hiBbsSeq" value="" />
+		<input type="hidden" name="hibbsSeq" value="" />
 		<input type="hidden" name="searchType" value="${searchType}" />
 		<input type="hidden" name="searchValue" value="${searchValue}" />
 		<input type="hidden" name="curPage" value="${curPage}" />

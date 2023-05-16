@@ -6,7 +6,7 @@
 	<id column="HIBBS_SEQ" property="hibbsSeq" />
 	<result column="USER_ID" property="userId" />
 	<result column="USER_NAME" property="userName" />
-		<result column="USER_EMAIL" property="userEmail" />
+	<result column="USER_EMAIL" property="userEmail" />
 	<result column="HIBBS_GROUP" property="hibbsGroup" />
 	<result column="HIBBS_ORDER" property="hibbsOrder" />
 	<result column="HIBBS_INDENT" property="hibbsIndent" />
@@ -16,6 +16,7 @@
 	<result column="REG_DATE" property="regDate" />
 	<result column="HIBBS_PARENT" property="hibbsParent" />
 </resultMap>
+
 
 <select id="boardListCount" parameterType="com.icia.web.model.HiBoard" resultType="int">
 SELECT COUNT(A.HIBBS_SEQ) AS CNT
@@ -67,7 +68,7 @@ SELECT HIBBS_SEQ,
           FROM (SELECT A.HIBBS_SEQ,
                        B.USER_ID,
                        NVL(B.USER_NAME, '') AS USER_NAME,
-                       NVL(B.USER_MAIL, '') AS USER_EMAIL,
+                       NVL(B.USER_EMAIL, '') AS USER_EMAIL,
                        NVL(A.HIBBS_GROUP, '') AS HIBBS_GROUP,
                        NVL(A.HIBBS_ORDER, '') AS HIBBS_ORDER,
                        NVL(A.HIBBS_INDENT, '') AS HIBBS_INDENT,
@@ -95,6 +96,55 @@ SELECT HIBBS_SEQ,
  WHERE RNUM <![CDATA[>=]]> #{startRow}
    AND RNUM <![CDATA[<=]]> #{endRow}	
 </select>
+
+<insert id="boardInsert" parameterType="com.icia.web.model.HiBoard">
+<selectKey resultType="long" keyProperty="hibbsSeq" order="BEFORE">
+	SELECT SEQ_HIBOARD_SEQ.NEXTVAL FROM DUAL
+</selectKey>
+INSERT INTO TBL_HIBOARD (
+    HIBBS_SEQ,
+    USER_ID,
+    HIBBS_GROUP,
+    HIBBS_ORDER,
+    HIBBS_INDENT,
+    HIBBS_TITLE,
+    HIBBS_CONTENT,
+    HIBBS_READ_CNT,
+    REG_DATE,
+    HIBBS_PARENT
+) VALUES (
+    #{hibbsSeq},
+    #{userId},
+    #{hibbsSeq},
+    #{hibbsOrder},
+    #{hibbsIndent},
+    #{hibbsTitle},
+    #{hibbsContent},
+    #{hibbsReadCnt},
+    SYSDATE,
+    #{hibbsParent}
+)
+</insert>
+
+<insert id="boardFileInsert" parameterType="com.icia.web.model.HiBoardFile"> 
+INSERT INTO TBL_HIBOARD_FILE (
+    HIBBS_SEQ,
+    FILE_SEQ,
+    FILE_ORG_NAME,
+    FILE_NAME,
+    FILE_EXE,
+    FILE_SIZE,
+    REG_DATE
+) VALUES (
+    #{hibbsSeq},
+    #{fileSeq},
+    #{fileOrgName},
+    #{fileName},
+    #{fileExe},
+    #{fileSize},
+    SYSDATE
+)
+</insert>
 
 
 </mapper>

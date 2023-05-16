@@ -6,9 +6,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.icia.web.dao.HiBoardDao;
 import com.icia.web.model.HiBoard;
+import com.icia.web.model.HiBoardFile;
 
 @Service("hiBoardService")
 public class HiBoardService {
@@ -43,5 +46,22 @@ public class HiBoardService {
 		
 		return count;
 	}
+	
+	@Transactional(propagation=Propagation.REQUIRED, rollbackFor=Exception.class)
+	public int boardInsert(HiBoard hiBoard) throws Exception{
+		int count = hiBoardDao.boardInsert(hiBoard);
+		
+		if(count > 0  && hiBoard.getHiBoardFile() != null) {
+			HiBoardFile hiBoardFile = hiBoard.getHiBoardFile();
+			hiBoardFile.setHibbsSeq(hiBoard.getHibbsSeq());
+			hiBoardFile.setFileSeq((short)1);
+			
+			hiBoardDao.boardFileInsert(hiBoard.getHiBoardFile());
+		}
+		
+		return count;
+	}
+	
+	
 
 }
