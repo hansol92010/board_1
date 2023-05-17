@@ -77,7 +77,7 @@ $(document).ready(function() {
 <%@ include file="/WEB-INF/views/include/navigation.jsp" %>
 
 <div class="container">
-	<h2>게시물 쓰기</h2>
+	<h2>게시물 </h2>
 	<form name="writeForm" id="writeForm" method="post" enctype="mutipart/form-data">
 		<input type="text" name="userName" id="userName" maxlength="20" value="${user.userName }" style="ime-mode:active;" class="form-control mt-4 mb-2" placeholder="이름을 입력해주세요" readonly />	
 		<input type="text" name="userEmail" id="userEmail" maxlength="30" value="${user.userEmail }" style="ime-mode:inactice;" class="form-control mb-2"	 placeholder="이메일을 입력해주세요" readonly />

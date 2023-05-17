@@ -28,7 +28,7 @@ public class HiBoardService {
 		try {
 			list = hiBoardDao.boardList(hiBoard);
 		} catch(Exception e) {
-			logger.debug("[HiBoardService] boardList Exception", e);
+			logger.error("[HiBoardService] boardList Exception", e);
 		}
 		
 		return list;
@@ -41,7 +41,7 @@ public class HiBoardService {
 			count = hiBoardDao.boardListCount(hiBoard);
 		}
 		catch(Exception e) {
-			logger.debug("[HiBoardService] boardListCount Exception", e);
+			logger.error("[HiBoardService] boardListCount Exception", e);
 		}
 		
 		return count;
@@ -62,6 +62,58 @@ public class HiBoardService {
 		return count;
 	}
 	
+	public int readCntIncrease(long hibbsSeq) {
+		int count = 0;
+		
+		try {
+			count = hiBoardDao.readCntIncrease(hibbsSeq);
+		}
+		catch(Exception e) {
+			logger.error("[HiBoardService] readCntIncrease Exception", e);
+		}
+		
+		return count;
+	}
 	
+	//기본 게시글 조회(보기)
+	public HiBoard boardSelect(long hibbsSeq) {
+		HiBoard hiBoard = null;
+		
+		try {
+			hiBoard = hiBoardDao.boardSelect(hibbsSeq);
+		}
+		catch(Exception e) {
+			logger.error("[HiBoardService] boardSelect Exception", e);
+		}
+		
+		return hiBoard;
+	}
+	
+	//게시글 보기(첨부파일 포함)
+	public HiBoard boardView(long hibbsSeq) {
+		HiBoard hiBoard = null;
+		
+		try {
+			hiBoard = hiBoardDao.boardSelect(hibbsSeq);
+			
+			if(hiBoard != null) {
+				
+				//조회수 증가
+				hiBoardDao.readCntIncrease(hibbsSeq);
+				
+				//첨부파일이 있을 때
+				HiBoardFile hiBoardFile = hiBoardDao.boardFileSelect(hibbsSeq);
+				
+				if(hiBoardFile != null) {
+					hiBoard.setHiBoardFile(hiBoardFile);
+				}
+			}
+			
+		} catch(Exception e) {
+			logger.error("[HiBoardService] boardView Exception",e);
+		}
+		
+		return hiBoard;
+	}
 
 }

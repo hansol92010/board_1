@@ -17,4 +17,10 @@ public interface HiBoardDao {
 	public int boardInsert(HiBoard hiBoard);
 	
 	public int boardFileInsert(HiBoardFile hiBoardFile);
+	
+	public int readCntIncrease(long hibbsSeq);
+	
+	public HiBoard boardSelect(long hibbsSeq);
+	
+	public HiBoardFile boardFileSelect(long hibbsSeq);
 }

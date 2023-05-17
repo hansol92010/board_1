@@ -164,4 +164,37 @@ public class HiBoardController {
 		
 		return res;
 	}
+	
+	@RequestMapping(value="/board/view", method=RequestMethod.POST)
+	public String view(ModelMap model, HttpServletRequest request, HttpServletResponse response) {
+		
+		String cookieUserId = CookieUtil.getHexValue(request, AUTH_COOKIE_NAME);
+		long hibbsSeq = HttpUtil.get(request, "hibbsSeq", (long)0);
+		String searchType = HttpUtil.get(request, "searchType", "");
+		String searchValue = HttpUtil.get(request, "searchValue", "");
+		long curPage = HttpUtil.get(request, "curPage", (long)0);
+		
+		String boardMe = "N";
+		
+		HiBoard hiBoard = null;
+		
+		if(hibbsSeq > 0) {
+			
+			hiBoard = hiBoardService.boardView(hibbsSeq);
+			
+			if(hiBoard != null && StringUtil.equals(cookieUserId, hiBoard.getUserId()) ) {
+				boardMe = "Y";
+			}
+				
+		}
+		
+		model.addAttribute("hiBoard", hiBoard);
+		model.addAttribute("hibbsSeq", hibbsSeq);
+		model.addAttribute("searchType", searchType);
+		model.addAttribute("searchValue", searchValue);
+		model.addAttribute("curPage", curPage);
+		model.addAttribute("boardMe", boardMe);
+		
+		return "/board/view";
+	}
 }

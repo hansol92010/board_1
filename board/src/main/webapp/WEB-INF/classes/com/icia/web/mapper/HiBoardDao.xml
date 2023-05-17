@@ -17,6 +17,16 @@
 	<result column="HIBBS_PARENT" property="hibbsParent" />
 </resultMap>
 
+<resultMap type="com.icia.web.model.HiBoardFile" id="hiBoardFileResultMap">
+	<id column="HIBBS_SEQ" property="hibbsSeq" />
+	<id column="FILE_SEQ" property="fileSeq"/>
+	<result column="FILE_ORG_NAME" property="fileOrgName" />
+	<result column="FILE_NAME" property="fileName" />
+	<result column="FILE_EXE" property="fileExe" />
+	<result column="FILE_SIZE" property="fileSize" />
+	<result column="REG_DATE" property="regDate" />
+</resultMap>
+
 
 <select id="boardListCount" parameterType="com.icia.web.model.HiBoard" resultType="int">
 SELECT COUNT(A.HIBBS_SEQ) AS CNT
@@ -145,6 +155,43 @@ INSERT INTO TBL_HIBOARD_FILE (
     SYSDATE
 )
 </insert>
+
+<select id="boardSelect" parameterType="long" resultMap="hiBoardResultMap" >
+SELECT A.HIBBS_SEQ,
+       B.USER_ID,
+       NVL(B.USER_EMAIL, '') AS USER_EMAIL,
+       NVL(A.HIBBS_GROUP, '') AS HIBBS_GROUP,
+       NVL(A.HIBBS_ORDER, '') AS HIBBS_ORDER,
+       NVL(A.HIBBS_INDENT, '') AS HIBBS_INDENT,
+       NVL(A.HIBBS_TITLE, '') AS HIBBS_TITLE,
+       NVL(A.HIBBS_CONTENT, '') AS HIBBS_CONTENT,
+       NVL(A.HIBBS_READ_CNT, '') AS HIBBS_READ_CNT,
+       NVL(TO_CHAR(A.REG_DATE, 'YYYY.MM.DD HH24:MI:SS'), '') AS REG_DATE,
+       NVL(A.HIBBS_PARENT, '') AS HIBBS_PARENT
+  FROM TBL_HIBOARD A, TBL_USER B
+ WHERE HIBBS_SEQ = #{value}
+   AND A.USER_ID = B.USER_ID
+</select>
+
+<select id="boardFileSelect" parameterType="long" resultMap="hiBoardFileResultMap">
+SELECT A.HIBBS_SEQ,
+       A.FILE_SEQ,
+       NVL(A.FILE_ORG_NAME,'') AS FILE_ORG_NAME,
+       NVL(A.FILE_NAME, '') AS FILE_NAME,
+       NVL(A.FILE_EXE, '') AS FILE_EXE,
+       NVL(A.FILE_SIZE, '') AS FILE_SIZE,
+       NVL(TO_CHAR(A.REG_DATE, 'YYYY.MM.SS HH24:MI:SS'), '') AS REG_DATE
+  FROM TBL_HIBOARD_FILE A, TBL_HIBOARD B
+  WHERE A.HIBBS_SEQ = B.HIBBS_SEQ
+    AND A.HIBBS_SEQ = #{value}
+
+</select>
+
+<update id="readCntIncrease" parameterType="long">
+UPDATE TBL_HIBOARD
+  SET HIBBS_READ_CNT = HIBBS_READ_CNT + 1
+WHERE HIBBS_SEQ = #{value}
+</update>
 
 
 </mapper>
