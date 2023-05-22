@@ -142,7 +142,7 @@ function fn_list(curPage) {
 	<button type="button" id="btnWrite" class="btn btn-secondary mb-3">글쓰기</button>
 
 	<form name="bbsForm" id="bbsForm" method="post">
-		<input type="hidden" name="hibbsSeq" value="" />
+		<input type="hidden" name="hibbsSeq" value="${hibbsSeq}" />
 		<input type="hidden" name="searchType" value="${searchType}" />
 		<input type="hidden" name="searchValue" value="${searchValue}" />
 		<input type="hidden" name="curPage" value="${curPage}" />

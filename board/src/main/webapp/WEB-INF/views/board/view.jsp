@@ -8,6 +8,27 @@
 <html>
 <head>
 <%@ include file="/WEB-INF/views/include/head.jsp" %>
+<script>
+$(document).ready(function() {
+	
+	$("#btnList").on("click", function() {
+		document.bbsForm.action = "/board/list";
+		document.bbsForm.submit();
+	});
+	
+	$("#btnReply").on("click", function() {
+		document.bbsForm.action = "/board/replyForm";
+		document.bbsForm.submit();
+	});
+	
+/* 	$("#btnUpdate").on("click", function() {
+		document.bbsForm.hibbsSeq.value = $("#hibbsSeq").val();
+		document.bbsForm.action = "/board/delete";
+		document.bbsForm.submit();
+	}) */
+	
+})
+</script>
 </head>
 <body>
 <%@ include file="/WEB-INF/views/include/navigation.jsp" %>
@@ -50,16 +71,16 @@
 
 <c:if test="${boardMe eq 'Y'}">
 	<button type="button" id="btnUpdate" class="btn btn-secondary">수정</button>
-	<button type="button" id="btnUpdate" class="btn btn-secondary">삭제</button>
+	<button type="button" id="btnDelete" class="btn btn-secondary">삭제</button>
 </c:if>
 </div>
 </c:if>	
 
-<form name="bbsForm" id="bbsForm"method="post">
-	<input type="hidden" name="hibbsSeq" id="hibbsSeq" value="" />
-	<input type="hidden" name="searchType" id="searchType" value="" />
-	<input type="hidden" name="searchValue" id="searchValue" value="" />
-	<input type="hidden" name="curPage" id="curPage" value="" />
+<form name="bbsForm" id="bbsForm" method="post">
+	<input type="hidden" name="hibbsSeq" id="hibbsSeq" value="${hibbsSeq}" />
+	<input type="hidden" name="searchType" id="searchType" value="${searchType}" />
+	<input type="hidden" name="searchValue" id="searchValue" value="${searchValue}" />
+	<input type="hidden" name="curPage" id="curPage" value="${curPage}" />
 </form>
 
 </body>

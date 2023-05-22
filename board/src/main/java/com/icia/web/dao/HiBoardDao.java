@@ -23,4 +23,8 @@ public interface HiBoardDao {
 	public HiBoard boardSelect(long hibbsSeq);
 	
 	public HiBoardFile boardFileSelect(long hibbsSeq);
+	
+	public int boardGroupOrderUpdate(HiBoard hiBoard);
+	
+	public int boardReplyInsert(HiBoard hiBoard);
 }

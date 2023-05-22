@@ -89,7 +89,6 @@ public class HiBoardService {
 		return hiBoard;
 	}
 	
-	//게시글 보기(첨부파일 포함)
 	public HiBoard boardView(long hibbsSeq) {
 		HiBoard hiBoard = null;
 		
@@ -114,6 +113,37 @@ public class HiBoardService {
 		}
 		
 		return hiBoard;
+	}
+	
+	public HiBoardFile boardFileSelect(long hibbsSeq) {
+		HiBoardFile hiBoardFile = null;
+		
+		try {
+			hiBoardFile = hiBoardDao.boardFileSelect(hibbsSeq);
+		}
+		catch(Exception e) {
+			logger.error("[HiBoardService] boardFileSelect Exception", e);
+		}
+		
+		return hiBoardFile;
+	}
+	
+	public int boardreplyInsert(HiBoard hiBoard) {
+	
+		int count = 0;
+
+		hiBoardDao.boardGroupOrderUpdate(hiBoard);
+		count = hiBoardDao.boardReplyInsert(hiBoard);
+		
+		if(count > 0 && hiBoard.getHiBoardFile() != null) {
+			HiBoardFile hiBoardFile = hiBoard.getHiBoardFile();
+			hiBoardFile.setHibbsSeq(hiBoard.getHibbsSeq());
+			hiBoardFile.setFileSeq((short)1);
+			
+			hiBoardDao.boardFileInsert(hiBoard.getHiBoardFile());
+			
+		}
+		return count;
 	}
 
 }

@@ -79,12 +79,16 @@ $(document).ready(function() {
 <div class="container">
 	<h2>게시물 </h2>
 	<form name="writeForm" id="writeForm" method="post" enctype="mutipart/form-data">
-		<input type="text" name="userName" id="userName" maxlength="20" value="${user.userName }" style="ime-mode:active;" class="form-control mt-4 mb-2" placeholder="이름을 입력해주세요" readonly />	
-		<input type="text" name="userEmail" id="userEmail" maxlength="30" value="${user.userEmail }" style="ime-mode:inactice;" class="form-control mb-2"	 placeholder="이메일을 입력해주세요" readonly />
-		<input type="text" name="hibbsTitle" id="hibbsTitle" maxlength="100" style="ime-mode:active;" class="form-control mb-2" placeholder="제목을 입력해주세요" required />
+		<input type="text" name="userName" id="userName" maxlength="20" value="${user.userName }" 
+								style="ime-mode:active;" class="form-control mt-4 mb-2" placeholder="이름을 입력해주세요" readonly />	
+		<input type="text" name="userEmail" id="userEmail" maxlength="30" value="${user.userEmail }" 
+								style="ime-mode:inactice;" class="form-control mb-2"	 placeholder="이메일을 입력해주세요" readonly />
+		<input type="text" name="hibbsTitle" id="hibbsTitle" maxlength="100" 
+								style="ime-mode:active;" class="form-control mb-2" placeholder="제목을 입력해주세요" required />
 		
 		<div class="form-group">
-			<textarea class="form-control" rows="10" name="hibbsContent" id="hibbsContent" style="ime-mode:active;" placeholder="내용을 입력해주세요" required></textarea>
+			<textarea class="form-control" rows="10" name="hibbsContent" id="hibbsContent" 
+								style="ime-mode:active;" placeholder="내용을 입력해주세요" required></textarea>
 		</div>
 		
 		<input type="file" name="hibbsFile" name="hibbsFile" class="form-control mb-2" placeholder="파일을 선택하세요" required />
@@ -103,8 +107,6 @@ $(document).ready(function() {
 		<input type="hidden" name="searchValue" value="" />
 		<input type="hidden" name="curpage" value="" />
 	</form>
-
-
 </div>
 
 </body>

@@ -193,5 +193,41 @@ UPDATE TBL_HIBOARD
 WHERE HIBBS_SEQ = #{value}
 </update>
 
+<update id="boardGroupOrderUpdate" parameterType="com.icia.web.model.HiBoard">
+UPDATE TBL_HIBOARD
+   SET HIBBS_ORDER = HIBBS_ORDER + 1
+ WHERE HIBBS_GROUP = #{hibbsGroup}
+   AND HIBBS_ORDER <![CDATA[>=]]> #{hibbsOrder}
+</update>
+
+<insert id="boardReplyInsert" parameterType="com.icia.web.model.HiBoard">
+<selectKey resultType="long" keyProperty="hibbsSeq" order="BEFORE">
+	SELECT SEQ_HIBOARD_SEQ.NEXTVAL FROM DUAL
+</selectKey>
+INSERT INTO TBL_HIBOARD (
+    HIBBS_SEQ,
+    USER_ID,
+    HIBBS_GROUP,
+    HIBBS_ORDER,
+    HIBBS_INDENT,
+    HIBBS_TITLE,
+    HIBBS_CONTENT,
+    HIBBS_READ_CNT,
+    REG_DATE,
+    HIBBS_PARENT
+) VALUES (
+    #{hibbsSeq},
+    #{userId},
+    #{hibbsGroup},
+    #{hibbsOrder},
+    #{hibbsIndent},
+    #{hibbsTitle},
+    #{hibbsContent},
+    0,
+    SYSDATE,
+    #{hibbsParent}
+)
+</insert>
+
 
 </mapper>
