@@ -12,7 +12,7 @@ public interface HiBoardDao {
 	
 	public List<HiBoard> boardList(HiBoard hiBoard);
 	
-	public int boardListCount(HiBoard hiBoard);
+	public long boardListCount(HiBoard hiBoard);
 	
 	public int boardInsert(HiBoard hiBoard);
 	
@@ -27,4 +27,10 @@ public interface HiBoardDao {
 	public int boardGroupOrderUpdate(HiBoard hiBoard);
 	
 	public int boardReplyInsert(HiBoard hiBoard);
+	
+	public int boardDelete(long hibbsSeq);
+	
+	public int boardFileDelete(long hibbsSeq);
+	
+	public int boardAnswersCount(long hibbsParent);
 }

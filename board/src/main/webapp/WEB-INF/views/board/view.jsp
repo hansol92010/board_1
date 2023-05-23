@@ -10,23 +10,79 @@
 <%@ include file="/WEB-INF/views/include/head.jsp" %>
 <script>
 $(document).ready(function() {
-	
-	$("#btnList").on("click", function() {
-		document.bbsForm.action = "/board/list";
-		document.bbsForm.submit();
-	});
-	
-	$("#btnReply").on("click", function() {
-		document.bbsForm.action = "/board/replyForm";
-		document.bbsForm.submit();
-	});
-	
-/* 	$("#btnUpdate").on("click", function() {
-		document.bbsForm.hibbsSeq.value = $("#hibbsSeq").val();
-		document.bbsForm.action = "/board/delete";
-		document.bbsForm.submit();
-	}) */
-	
+<c:choose>
+	<c:when test="${empty hiBoard}">
+		alert("게시물이 존재하지 않습니다.");
+		location.href = "/board/list";
+	</c:when>
+
+	<c:otherwise>
+		$("#btnList").on("click", function() {
+			document.bbsForm.action = "/board/list";
+			document.bbsForm.submit();
+		});
+		
+		$("#btnReply").on("click", function() {
+			document.bbsForm.action = "/board/replyForm";
+			document.bbsForm.submit();
+		});
+		
+			<c:if test="${boardMe eq 'Y'}">
+		$("#btnUpdate").on("click", function() {
+			document.bbsForm.action = "/board/updateForm";
+			document.bbsForm.submit();
+		});
+		
+		$("#btnDelete").on("click", function() {
+			if(confirm("게시물을 삭제하시겠습니까?") == true) {
+				
+				$.ajax({
+					type:"POST",
+					url:"/board/delete",
+					data: {
+						hibbsSeq:<c:out value="${hiBoard.hibbsSeq}" />
+					},
+					dataType:"JSON",
+					beforeSend:function(xhr){
+			    		xhr.setRequestHeader("AJAX", "true");
+			    	},
+			    	success:function(response)
+			    	{
+			    		if(response.code == 0)
+			    		{
+			    			alert("게시물이 삭제되었습니다.");
+			    			location.href = "/board/list";
+			    		}	
+			    		else if(response.code == 400)
+			    		{
+			    			alert("파라미터 값이 올바르지 않습니다.");
+			    		}
+			    		else if(response.code == 404)
+			    		{
+			    			alert("게시물을 찾을 수 없습니다.");
+			    			location.href = "/board/list";
+			    		}
+			    		else if(response.code == -999)
+			    		{
+			    			alert("답변 게시물이 존재하여 삭제할 수 없습니다.");
+			    		}	
+			    		else
+			    		{
+			    			alert("게시물 삭제 중 오류가 발생하였습니다.");
+			    		}	
+			    	
+			    	},
+			    	error:function(xhr, status, error)
+			    	{
+			    		icia.common.error(error);
+			    	}
+				});	
+			}
+
+		});
+			</c:if>
+	</c:otherwise>
+</c:choose>
 })
 </script>
 </head>

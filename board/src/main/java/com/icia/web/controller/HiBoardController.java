@@ -44,7 +44,7 @@ public class HiBoardController {
 	private String UPLOAD_SAVE_DIR;
 	
 	@Autowired
-	private UserService userservice;
+	private UserService userService;
 	
 	@Autowired
 	private HiBoardService hiBoardService;
@@ -56,13 +56,13 @@ public class HiBoardController {
 	public String boardList(ModelMap model, HttpServletRequest request, HttpServletResponse response) {
 		
 		String searchType = HttpUtil.get(request, "searchType", "");
-		String searchValue = HttpUtil.get(request, "searchVale", "");
+		String searchValue = HttpUtil.get(request, "searchValue", "");
 		long curPage = HttpUtil.get(request, "curPage", (long)1);
 		
 		Paging paging = null;
 		HiBoard search = new HiBoard();
 		
-		int totalCount = 0;
+		long totalCount = 0;
 		List<HiBoard> list = null;
 		
 		if(!StringUtil.isEmpty(searchType) && !StringUtil.isEmpty(searchValue)) {	
@@ -113,7 +113,7 @@ public class HiBoardController {
 		User user = null;
 		
 		if(!StringUtil.isEmpty(cookieUserId)) {
-			user = userservice.userSelect(cookieUserId);
+			user = userService.userSelect(cookieUserId);
 			
 			model.addAttribute("user", user);
 		}
@@ -256,7 +256,7 @@ public class HiBoardController {
 			hiBoard = hiBoardService.boardSelect(hibbsSeq);
 			
 			if(hiBoard != null) {
-				user = userservice.userSelect(cookieUserId);
+				user = userService.userSelect(cookieUserId);
 				
 				model.addAttribute("hibbsSeq", hibbsSeq);
 				model.addAttribute("hiBoard", hiBoard);
@@ -335,5 +335,90 @@ public class HiBoardController {
 		}
 		
 		return ajaxRes;
+	}
+	
+	@RequestMapping(value="/board/delete", method=RequestMethod.POST)
+	@ResponseBody
+	public Response<Object> delete(HttpServletRequest request, HttpServletResponse response) {
+		
+		Response<Object> ajaxResponse =  new Response<Object>();
+		
+		String cookieUserId = CookieUtil.getHexValue(request, AUTH_COOKIE_NAME);
+		long hibbsSeq = HttpUtil.get(request, "hibbsSeq", (long)0);
+		
+		if(hibbsSeq > 0) {
+			
+			HiBoard hiBoard = hiBoardService.boardSelect(hibbsSeq);
+			
+			if(hiBoard != null) {
+				
+				if(StringUtil.equals(cookieUserId, hiBoard.getUserId())) {
+					
+					try {
+					
+						if(hiBoardService.boardAnswersCount(hibbsSeq) > 0) {
+							ajaxResponse.setResponse(-999, "answers exist");
+						} else {
+							if(hiBoardService.boardDelete(hibbsSeq) > 0) {
+								ajaxResponse.setResponse(0, "Success");
+							} else {
+								ajaxResponse.setResponse(500, "Internal Server Error3");
+							}
+						}
+						
+					} catch(Exception e) {
+						logger.error("[HiBoardService] /board/delete Exception", e);
+						ajaxResponse.setResponse(500, "Internal Server Error2");
+					}
+				} else {
+					ajaxResponse.setResponse(404, "Not Found");
+				}
+			} else {
+				ajaxResponse.setResponse(404, "Not Found");
+			} 
+		} else {
+			ajaxResponse.setResponse(400, "Bad Request");
+		}
+		
+		if(logger.isDebugEnabled()) {
+			logger.debug("[HiBoardController] /board/delete response\n" + JsonUtil.toJsonPretty(ajaxResponse));
+		}
+		
+		
+		return ajaxResponse;
+	}
+	
+	
+	
+	@RequestMapping(value="/board/updateForm")
+	public String updateForm(ModelMap model, HttpServletRequest request, HttpServletResponse response) {
+		
+		String cookieUserId = CookieUtil.getHexValue(request, AUTH_COOKIE_NAME);
+		long hibbsSeq = HttpUtil.get(request, "hibbsSeq", (long)0);
+		String searchType = HttpUtil.get(request, "searchType", "");
+		String searchValue = HttpUtil.get(request, "searchValue", "");
+		long curPage = HttpUtil.get(request, "curPage", (long)1);
+		
+		User user = null;
+		HiBoard hiBoard = null;
+		//HiBoardFile hiBoardFile = null;
+			
+		if(hibbsSeq > 0) {
+			
+			hiBoard = new HiBoard();
+			
+			hiBoard = hiBoardService.boardSelect(hibbsSeq);
+			
+			hiBoard.setUserId(user.getUserId());
+			hiBoard.setUserEmail(user.getUserEmail());
+			hiBoard.setUserName(user.getUserName());
+			
+			model.addAttribute("hiBoard", hiBoard);
+			model.addAttribute("searchType", searchType);
+			model.addAttribute("searchValue", searchValue);
+			model.addAttribute("curPage", curPage);
+		}
+		
+		return "/board/updateForm";
 	}
 }

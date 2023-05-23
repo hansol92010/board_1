@@ -28,15 +28,14 @@
 </resultMap>
 
 
-<select id="boardListCount" parameterType="com.icia.web.model.HiBoard" resultType="int">
+<select id="boardListCount" parameterType="com.icia.web.model.HiBoard" resultType="long">
 SELECT COUNT(A.HIBBS_SEQ) AS CNT
-  FROM TBL_HIBOARD A, TBL_HIBOARD B
+  FROM TBL_HIBOARD A, TBL_USER B
  WHERE A.USER_ID = B.USER_ID
- 
 <if test='searchType != null and searchType != "" and searchValue != null and searchValue != "" '>
 	<choose>
 		<when test='searchType == "1"' >
-			AND B.USERNAME LIKE '%' || #{searchValue} || '%'
+			AND B.USER_NAME LIKE '%' || #{searchValue} || '%'
 		</when>
 		<when test='searchType == "2"'>
 			AND A.HIBBS_TITLE LIKE '%' || #{searchValue} || '%'
@@ -44,7 +43,6 @@ SELECT COUNT(A.HIBBS_SEQ) AS CNT
 		<when test='searchType == "3"'>
 			AND DBMS_LOB.INSTR(A.HIBBS_CONTENT, #{searchValue}) > 0
 		</when>
-	
 	</choose>
 </if> 
 </select>
@@ -76,17 +74,17 @@ SELECT HIBBS_SEQ,
                REG_DATE,
                HIBBS_PARENT
           FROM (SELECT A.HIBBS_SEQ,
-                       B.USER_ID,
+                       A.USER_ID,
                        NVL(B.USER_NAME, '') AS USER_NAME,
                        NVL(B.USER_EMAIL, '') AS USER_EMAIL,
-                       NVL(A.HIBBS_GROUP, '') AS HIBBS_GROUP,
-                       NVL(A.HIBBS_ORDER, '') AS HIBBS_ORDER,
-                       NVL(A.HIBBS_INDENT, '') AS HIBBS_INDENT,
+                       NVL(A.HIBBS_GROUP, 0) AS HIBBS_GROUP,
+                       NVL(A.HIBBS_ORDER, 0) AS HIBBS_ORDER,
+                       NVL(A.HIBBS_INDENT, 0) AS HIBBS_INDENT,
                        NVL(A.HIBBS_TITLE, '') AS HIBBS_TITLE,
                        NVL(A.HIBBS_CONTENT, '') AS HIBBS_CONTENT,
-                       NVL(A.HIBBS_READ_CNT, '') AS HIBBS_READ_CNT,
+                       NVL(A.HIBBS_READ_CNT, 0) AS HIBBS_READ_CNT,
                        NVL(TO_CHAR(A.REG_DATE, 'YYYY.MM.DD HH24:MI:SS'), '') AS REG_DATE,
-                       NVL(A.HIBBS_PARENT, '') AS HIBBS_PARENT
+                       NVL(A.HIBBS_PARENT, 0) AS HIBBS_PARENT
                   FROM TBL_HIBOARD A, TBL_USER B
                  WHERE A.USER_ID = B.USER_ID
 <if test='searchType != null and searchType != "" and searchValue != null and searchValue != ""'>
@@ -98,7 +96,7 @@ SELECT HIBBS_SEQ,
                    AND A.HIBBS_TITLE LIKE '%' || #{searchValue} || '%'
 		</when>
 		<when test='searchType == "3"'>
-                   AND DBMS_LOB.INSTR(TIBBS_TITLE,  '') > 0
+                   AND DBMS_LOB.INSTR(A.HIBBS_CONTENT,  #{searchValue}) > 0
 		</when>
 	</choose>
 </if>
@@ -228,6 +226,22 @@ INSERT INTO TBL_HIBOARD (
     #{hibbsParent}
 )
 </insert>
+
+<delete id="boardDelete" parameterType="long">
+DELETE FROM TBL_HIBOARD
+ WHERE HIBBS_SEQ = #{value}
+</delete>
+
+<select id="boardAnswersCount" parameterType="long" resultType="int">
+ SELECT COUNT(HIBBS_SEQ) AS CNT
+   FROM TBL_HIBOARD
+ WHERE HIBBS_PARENT = #{value}
+</select>
+
+<delete id="boardFileDelete" parameterType="long">
+DELETE FROM TBL_HIBOARD_FILE
+ WHERE HIBBS_SEQ = #{value}
+</delete>
 
 
 </mapper>

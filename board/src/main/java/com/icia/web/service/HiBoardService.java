@@ -5,10 +5,12 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.icia.common.util.FileUtil;
 import com.icia.web.dao.HiBoardDao;
 import com.icia.web.model.HiBoard;
 import com.icia.web.model.HiBoardFile;
@@ -17,6 +19,9 @@ import com.icia.web.model.HiBoardFile;
 public class HiBoardService {
 	
 	private Logger logger = LoggerFactory.getLogger(HiBoardService.class);
+	
+	@Value("#{env['upload.save.dir']}")
+	private String UPLOAD_SAVE_DIR;
 	
 	@Autowired
 	private HiBoardDao hiBoardDao;
@@ -34,8 +39,8 @@ public class HiBoardService {
 		return list;
 	}
 	
-	public int boardListCount(HiBoard hiBoard) {
-		int count = 0;
+	public long boardListCount(HiBoard hiBoard) {
+		long count = 0;
 		
 		try {
 			count = hiBoardDao.boardListCount(hiBoard);
@@ -128,6 +133,7 @@ public class HiBoardService {
 		return hiBoardFile;
 	}
 	
+	@Transactional(propagation=Propagation.REQUIRED, rollbackFor=Exception.class)
 	public int boardreplyInsert(HiBoard hiBoard) {
 	
 		int count = 0;
@@ -143,6 +149,47 @@ public class HiBoardService {
 			hiBoardDao.boardFileInsert(hiBoard.getHiBoardFile());
 			
 		}
+		return count;
+	}
+	
+	@Transactional(propagation=Propagation.REQUIRED, rollbackFor=Exception.class)
+	public int boardDelete(long hibbsSeq) {
+		
+		int count = 0;
+		
+		HiBoard hiBoard = hiBoardDao.boardSelect(hibbsSeq);
+		
+		if(hiBoard != null) {
+			
+			count = hiBoardDao.boardDelete(hibbsSeq);
+			
+			if(count > 0) {
+				HiBoardFile hiBoardFile = hiBoardDao.boardFileSelect(hibbsSeq);
+				
+				if(hiBoardFile != null) {
+					
+					if(hiBoardDao.boardFileDelete(hibbsSeq) > 0) {
+						
+						FileUtil.deleteFile(UPLOAD_SAVE_DIR + FileUtil.getFileSeparator() + hiBoardFile.getFileName());
+					}
+					
+				}
+			}
+			
+		}
+		
+		return count;
+	}
+	
+	public int boardAnswersCount(long hibbsParent) {
+		int count = 0;
+		
+		try {
+			count = hiBoardDao.boardAnswersCount(hibbsParent);
+		}
+		catch(Exception e) {
+			logger.error("[HiBoardService] boardAnswersCount Exception", e);
+		}		
 		return count;
 	}
 

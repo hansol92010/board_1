@@ -126,7 +126,7 @@ function fn_loginCheck()
 				
 				if(code == 0)
 				{
-					location.href = "/";
+					location.href = "/board/list";
 				}
 				else
 				{

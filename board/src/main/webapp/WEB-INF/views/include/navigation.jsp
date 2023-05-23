@@ -18,9 +18,6 @@
 	    <li class="nav-item"> 
 	      <a class="nav-link" href="/kakao/pay">카카오페이</a> 
 	    </li>
-	    <li class="nav-item"> 
-	      <a class="nav-link" href="/shop/shopList">쇼핑리스트</a> 
-	    </li>
   </ul> 
 </nav>
 <%
