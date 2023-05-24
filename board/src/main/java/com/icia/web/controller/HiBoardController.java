@@ -405,20 +405,92 @@ public class HiBoardController {
 			
 		if(hibbsSeq > 0) {
 			
-			hiBoard = new HiBoard();
+			hiBoard = hiBoardService.boardViewSelect(hibbsSeq);
 			
-			hiBoard = hiBoardService.boardSelect(hibbsSeq);
-			
-			hiBoard.setUserId(user.getUserId());
-			hiBoard.setUserEmail(user.getUserEmail());
-			hiBoard.setUserName(user.getUserName());
-			
-			model.addAttribute("hiBoard", hiBoard);
-			model.addAttribute("searchType", searchType);
-			model.addAttribute("searchValue", searchValue);
-			model.addAttribute("curPage", curPage);
+			if(hiBoard != null) {
+				if(StringUtil.equals(cookieUserId, hiBoard.getUserId())) {
+					user = userService.userSelect(cookieUserId);
+				} else {
+					hiBoard = null;
+				} 
+			}
 		}
+				
+		model.addAttribute("hiBoard", hiBoard);
+		model.addAttribute("user", user);
+		model.addAttribute("searchType", searchType);
+		model.addAttribute("searchValue", searchValue);
+		model.addAttribute("curPage", curPage);
 		
 		return "/board/updateForm";
+	}
+	
+	@RequestMapping(value="/board/updateProc", method=RequestMethod.POST)
+	@ResponseBody
+	public Response<Object> updateProc(MultipartHttpServletRequest request, HttpServletResponse response) {
+		Response<Object> ajaxResponse = new Response<Object>();
+		
+		String cookieUserId = CookieUtil.getHexValue(request, AUTH_COOKIE_NAME);
+		long hibbsSeq = HttpUtil.get(request, "hibbsSeq", (long)0);
+		String hibbsTitle = HttpUtil.get(request, "hibbsTitle", "");
+		String hibbsContent = HttpUtil.get(request, "hibbsContent", "");
+		FileData fileData = HttpUtil.getFile(request, "hibbsFile", UPLOAD_SAVE_DIR);
+		
+		HiBoard hiBoard = null;
+		
+		if(hibbsSeq > 0 && !StringUtil.isEmpty(hibbsTitle) && !StringUtil.isEmpty(hibbsContent)) {
+			
+			hiBoard = hiBoardService.boardViewSelect(hibbsSeq);
+			
+			if(hiBoard != null) {
+			
+				if(StringUtil.equals(cookieUserId, hiBoard.getUserId())) {
+					
+					hiBoard.setHibbsSeq(hibbsSeq);
+					hiBoard.setHibbsTitle(hibbsTitle);
+					hiBoard.setHibbsContent(hibbsContent);
+					
+					if(fileData != null && fileData.getFileSize() > 0) {
+						HiBoardFile hiBoardFile = new HiBoardFile();
+						
+						hiBoardFile.setFileName(fileData.getFileName());
+						hiBoardFile.setFileOrgName(fileData.getFileOrgName());
+						hiBoardFile.setFileExe(fileData.getFileExt());
+						hiBoardFile.setFileSize(fileData.getFileSize());
+						
+						hiBoard.setHiBoardFile(hiBoardFile);
+						
+					}
+					
+					try {
+						
+						if(hiBoardService.boardUpdate(hiBoard) > 0) {
+							ajaxResponse.setResponse(0, "Success");
+						} else {
+							ajaxResponse.setResponse(500, "Internal Server Error2");
+						}
+						
+					} catch(Exception e) {
+						logger.error("[HiBoardController] /board/updateProc Exception", e);
+						ajaxResponse.setResponse(500, "Internal Server Error1");
+					}
+					
+				} else {
+					ajaxResponse.setResponse(404, "Not Found1");
+				}
+			} else {
+				ajaxResponse.setResponse(404, "Not Found2");
+			}
+		} else {
+			ajaxResponse.setResponse(400, "Bad Request");
+		}
+		
+		
+		if(logger.isDebugEnabled())
+		{
+			logger.debug("[HiBoardController] /board/updateProc response\n" + JsonUtil.toJsonPretty(ajaxResponse));
+		}
+		
+		return ajaxResponse;
 	}
 }

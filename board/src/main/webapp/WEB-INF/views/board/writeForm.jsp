@@ -9,6 +9,11 @@ $(document).ready(function() {
 	
 	$("#hibbsTitle").focus();
 	
+	$("#btnList").on("click", function() {
+		document.bbsForm.action = "/board/list";
+		document.bbsForm.submit();
+	})
+	
 	$("#btnWrite").on("click", function() {
 		
 		$("#btnWrite").prop("disabled", true);

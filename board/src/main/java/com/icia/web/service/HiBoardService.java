@@ -192,5 +192,56 @@ public class HiBoardService {
 		}		
 		return count;
 	}
+	
+	public HiBoard boardViewSelect(long hibbsSeq) {
+		HiBoard hiBoard = null;
+		
+		try {
+			hiBoard = hiBoardDao.boardSelect(hibbsSeq);
+			
+			if(hiBoard != null) {
+				HiBoardFile hiBoardFile = hiBoardDao.boardFileSelect(hibbsSeq);
+				
+				if(hiBoardFile != null) {
+					hiBoard.setHiBoardFile(hiBoardFile);
+				}
+			}
+		} catch(Exception e) {
+			logger.error("[HiBoardService] boardSelectView Exception", e);
+		}
+		
+		return hiBoard;
+	}
+	
+	@Transactional(propagation=Propagation.REQUIRED, rollbackFor=Exception.class)
+	public int boardUpdate(HiBoard hiBoard) {
+		
+		int count = 0;
+		
+		count = hiBoardDao.boardUpdate(hiBoard);
+		
+		if(count > 0 && hiBoard.getHiBoardFile() != null) {
+			
+			HiBoardFile delHiBoardFile = hiBoardDao.boardFileSelect(hiBoard.getHibbsSeq());
+			
+			if(delHiBoardFile != null) {
+				
+				FileUtil.deleteFile(UPLOAD_SAVE_DIR + FileUtil.getFileSeparator() + delHiBoardFile.getFileName());
+				
+				hiBoardDao.boardFileDelete(hiBoard.getHibbsSeq());
+				
+			}
+			
+			HiBoardFile hiBoardFile = hiBoard.getHiBoardFile();
+			
+			hiBoardFile.setHibbsSeq(hiBoard.getHibbsSeq());
+			hiBoardFile.setFileSeq((short)1);
+			
+			hiBoardDao.boardFileInsert(hiBoardFile);
+				
+		}
+		
+		return count;
+	}
 
 }

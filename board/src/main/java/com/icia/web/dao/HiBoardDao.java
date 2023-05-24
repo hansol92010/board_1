@@ -33,4 +33,6 @@ public interface HiBoardDao {
 	public int boardFileDelete(long hibbsSeq);
 	
 	public int boardAnswersCount(long hibbsParent);
+	
+	public int boardUpdate(HiBoard hiBoard);
 }

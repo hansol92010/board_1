@@ -34,7 +34,7 @@ $(document).ready(function() {
 			}
 			
 			var form = $("#updateForm")[0];
-			var formDate = new FormData(form);
+			var formData = new FormData(form);
 			
 			$.ajax({
 				type:"POST",
@@ -47,10 +47,29 @@ $(document).ready(function() {
 					xhr.setRequestHeader("AJAX", "true");
 				},
 				success:function(response) {
+					if(response.code == 0 ) {
+						alert("게시물 수정이 완료되었습니다.");
+						document.bbsForm.action = "/board/list";
+						document.bbsForm.submit();
+					} else if(response.code == 400) {
+						alert("파라미터 값이 잘못되었습니다.");
+						$("#btnUpdate").prop("disabled", false);
+					} else if(response.code == 404) {
+						alert("게시물이 존재하지 않습니다.")
+						location.href = "/board/list";
+					} else if(response.code == 500) {
+						alert("게시물 수정 중 오류가 발생하였습니다.");
+						$("#btnUpdate").prop("disabled", false);
+					} else {
+						alert("게시물 수정 중 오류가 발생하였습니다.");
+						$("#btnUpdate").prop("disabled", false);
+					}
 					
 				},
 				error:function(error) {
 					icia.common.errror(error);
+					alert("게시물 수정 중 오류가 발생하였습니다.");
+					$("#btnUpdate").prop("disabled", false);
 				}
 			});
 			
@@ -59,7 +78,7 @@ $(document).ready(function() {
 		$("#btnList").on("click", function() {
 			document.bbsForm.action = "/board/list";
 			document.bbsForm.submit();
-		})
+		});
 	</c:otherwise>
 </c:choose>
 })
@@ -71,8 +90,8 @@ $(document).ready(function() {
 <div class="container">
 	<h2>게시물 수정</h2>
 	<form name="updateForm" id="updateForm" method="post" enctype="multipart/form-data">
-		<input type="text" name="userName" id="userName" maxlength="20" value="${hiBoard.userName}" style="ime-mode:active;" class="form-control mt-4 mb-2" placeholder="이름을 입력해주세요." readonly/>
-		<input type="text" name="userEmail" id="userEmail" maxlength="30" value="${hiBoard.userEmail}" style="ime-mode:inactive;" class="form-control mb-2" placeholder="이메일을 입력해주세요." readonly />
+		<input type="text" name="userName" id="userName" maxlength="20" value="${user.userName}" style="ime-mode:active;" class="form-control mt-4 mb-2" placeholder="이름을 입력해주세요." readonly/>
+		<input type="text" name="userEmail" id="userEmail" maxlength="30" value="${user.userEmail}" style="ime-mode:inactive;" class="form-control mb-2" placeholder="이메일을 입력해주세요." readonly />
 		<input type="text" name="hibbsTitle" id="hibbsTitle" maxlength="100" value="${hiBoard.hibbsTitle}" style="ime-mode:active" class="form-control mb-2" placeholder="제목을 입력해주세요." required />
 		<div class="form-group">
 			<textarea class="form-control" rows="10" name="hibbsContent" id="hibbsContent" style="ime-mode:active;" placeholder="내용을 입력해주세요." required>${hiBoard.hibbsContent}</textarea>
